@@ -1,0 +1,61 @@
+<?php
+function product_install() {
+  // use get_t() to get the name of our localization function for translation
+  // during install, when t() is not available.
+  $t = get_t();
+
+  // Define the node type.
+  $product = array(
+    'type' => 'product',
+    'name' => $t('Product'),
+    'base' => 'node_content',
+    'description' => $t('This is a product category'),
+    'body_label' => $t('Product Description')
+  );
+
+  // Complete the node type definition by setting any defaults not explicitly
+  // declared above.
+  $content_type = node_type_set_defaults($product);
+  node_add_body_field($content_type);
+
+  // Save the content type
+  node_type_save($content_type);
+}
+
+$field_name = 'dec_price';
+
+
+//  Verify the field does not already exist.
+if ( field_info_field( $field_name ) ) {
+    return;
+}
+
+//  Create the field definition array.
+$field = array(
+    'field_name' => $field_name,
+    'type' => 'number_decimal',
+);
+//  Create the field.
+$field = field_create_field( $field );
+
+//  Create the field instance definition array.
+$instance = array(
+    'field_name' => $field[ 'field_name' ],
+    'entity_type' => 'node',
+    'bundle' => 'product',
+    'description' => 'A field for testing the programmatic creation of new fields.',
+    'label' => 'Price',
+    'widget' => array(
+        'type' => 'textfield',
+    ),
+);
+
+//  Create an instance of the field and bind it to the bundle.
+field_create_instance($instance);
+
+
+
+
+
+
+

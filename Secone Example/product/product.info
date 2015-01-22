@@ -1,0 +1,4 @@
+name = Product
+description = Create a different Product category
+core = 7.x
+package = custom
