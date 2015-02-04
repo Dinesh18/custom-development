@@ -1,5 +1,142 @@
 <?php
 
-//CREATE NEW CONTENT TYPE
 
-//END CONTENT TYPE
+/* 
+Implements hook_menu
+
+ */
+		function product_menu()
+
+		{
+		$menuitems['product'] = array (
+
+
+			'title' => 'Product',
+
+			'page callback' => 'product_callback',
+
+			'access callback' => TRUE,
+
+			'type' => MENU_NORMAL_ITEM,
+
+
+		);
+
+		return $menuitems;
+			
+			
+		}
+
+		/* 
+Page call back function
+
+ */
+		
+		function product_callback() {
+
+		/* 
+Header array 
+
+ */
+		 $header = array(
+			array('data' => t('Nid'),'field' => 'nid'),
+			array('data' => t('Title'),'field' => 'title'),
+		   array('data' => t('Price'),'field' => 'field_price_value'),
+			array('data' => t('Status'),'field' => 'status'),
+			array('data' => t('Created Date'),'field' => 'created'),
+			array('data' => t('Updated Date'),'field' => 'changed'),
+		  ); 
+		  
+		/* 
+Sql query with join ( node and field_revision_field_price)
+
+ */	
+		 
+		   $sql = db_select('node', 'n')->extend('PagerDefault');
+		   $sql->join('field_revision_field_price', 'p', 'n.nid = p.entity_id');
+		   $sql
+			 ->condition('type', 'product')
+			 ->fields('n', array('nid', 'title','status','created','changed'))
+			 ->fields('p', array('field_price_value'))
+			 ->limit(10)
+			 ->orderBy('n.nid','p.field_price_value');
+
+			 
+
+		$results= $sql->execute();
+
+  
+/*   $txt = '';
+  foreach($results as $result)
+  {
+	$txt .= '' 	. $result->nid;  
+	$txt .= ''.   $result->title;  
+	$txt .= ''.	  $result->field_price_value;  
+	$txt .= ''.   $result->status;  
+	$txt .= ''.   $result->created;  
+	$txt .= ''.   $result->changed; 
+	$txt .= '<br />';  
+	
+  }
+
+	  $form['txt']['#markup'] = $txt;
+
+  return $output; */
+  
+			foreach($results as $result)
+			{
+		 $rows[] = array(
+		 'Nid'=> ($result->nid),
+		 'Title'=> ($result->title),
+		 'Price'=> ($result->field_price_value),
+		 'Status'=> ($result->status), 
+	   'Created Date' => format_date($result->created, 'custom', 'd-m-Y'),
+      'Updated Date' => format_date($result->changed, 'custom', 'd-m-Y'),
+
+		 );
+		   
+		  
+	}
+  
+  
+  /*   Added theme as table */
+		   $output =  theme('table',   
+			  array( 
+					  'header' => $header,    
+					  'rows'     => $rows,
+				) 
+		  );
+/* 
+      Added Pager theme along with the previous table theme
+		 
+		   */
+		   
+		   
+		   $output .= theme('pager');
+		  return $output; 
+		  
+		  
+		}
+
+
+
+   
+
+/* Reference Link
+http://internetdevels.com/blog/examples-themetable-and-themefieldset-functions-drupal-7 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
