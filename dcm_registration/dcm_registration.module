@@ -1,0 +1,140 @@
+<?php
+
+/**
+
+* Implementation of hook_menu().
+
+*/
+
+function dcm_registration_menu() {
+
+    $menuitems['user_registration'] = array(
+
+    'title' => 'User Registration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dcm_registration'),
+    'access arguments' => array('access content'),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    
+
+    );
+
+    return $menuitems;
+
+}
+
+
+
+/**
+* Implements hook_block_info().
+*/
+function dcm_registration_block_info() {
+  $blocks = array();
+  $blocks['user_registration'] = array(
+    'info' => t('DCM block'),
+  );
+  return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ */
+function dcm_registration_block_view($delta='') {
+  $block = array();
+  
+  switch($delta) {
+    case 'user_registration' :
+      $block = array(
+        'subject' => t('User Registration'),
+        'content' => user_registration_block(),
+      );
+      break;
+  }
+  
+  return $block;
+}
+/**
+ * Search Block
+ */
+function user_registration_block() {
+  return drupal_get_form('dcm_registration_form');
+}
+
+function dcm_registration_form($form_state,&$form_state) {
+	
+	
+
+  $form['first_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('First Name'),
+	'#size' => '30',
+	 '#required' => true,
+  );
+   $form['last_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Last Name'),
+	'#size' => '30',
+	 '#required' => true,
+   );
+   $form['mobile_number'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Mobile Number'),
+	'#size' => '30',
+	 '#required' => true,
+    );
+   $form['address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address'),
+	'#size' => '30',
+	 '#required' => true,
+  );
+   $form['age'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Age'),
+	'#size' => '30',
+	 '#required' => true,
+    );
+   $form['country']=array(
+        '#type'=>'select',
+        '#title'=>t('Select your country'),
+        '#options'=>array('India','UK','France','Japan'),
+		 '#required' => true,
+       );
+   $form['terms_condition']=array(
+        '#type'=>'checkbox',
+        '#title'=>t('I agree to terms and conditions.'),
+		'#size' => '30',
+		 '#required' => true,
+        
+       );
+  // Adds a simple submit button that refreshes the form and clears its contents -- this is the default behavior for forms.
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Submit',
+	'#size' => '30',
+  
+  );
+
+  return $form;
+}
+/*
+* handles form submit
+*/
+function dcm_registration_form_submit($form, $form_state) {
+  //Add user details to dcm_registration_form table.
+  
+   
+  
+  db_insert('dcm_registration_form')
+  ->fields(array(
+    'first_name' => $form_state['values']['first_name'],
+    'last_name' => $form_state['values']['last_name'],
+    'mobile_number' => $form_state['values']['mobile_number'],
+    'address' => $form_state['values']['address'],
+    'age' => $form_state['values']['age'],
+    'country' => $form_state['values']['country'],
+  ))
+  ->execute();
+  //Set success message
+  drupal_set_message("Details have been submitted successfully");
+}

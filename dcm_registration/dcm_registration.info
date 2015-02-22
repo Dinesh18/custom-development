@@ -1,0 +1,4 @@
+name = DCM Registration
+description = DCM Registration form
+core = 7.x
+package = custom
